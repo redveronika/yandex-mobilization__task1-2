@@ -1419,11 +1419,16 @@ const speakersConst = [
  * @param value - значение ключа
  * **/
 function checkStorage(name, value) {
-  if(localStorage.getItem(name)) {
-    return JSON.parse(localStorage.getItem(name));
-  } else {
-    localStorage.setItem(name, JSON.stringify(value));
-    return value;
+  try {
+      if(localStorage.getItem(name)) {
+          return JSON.parse(localStorage.getItem(name));
+      } else {
+          localStorage.setItem(name, JSON.stringify(value));
+          return value;
+      }
+  } catch(error) {
+      console.error('Could not write to localStorage', error);
+      return value;
   }
 }
 
@@ -1433,7 +1438,11 @@ function checkStorage(name, value) {
  * @param value - значение ключа
  * **/
 function writeInStorage(name, value) {
-  localStorage.setItem(name, JSON.stringify(value));
+    try {
+        localStorage.setItem(name, JSON.stringify(value));
+    } catch(error) {
+        console.error('Could not write to localStorage', error);
+    }
 }
 
 // изменяемые данные лекций, аудиторий, школ и лекторов. Они могут быть разными для каждого клиента

@@ -4,7 +4,8 @@
  * @param lectureEdit(optional) - объект редактируемой лекции
  * **/
 function setFormValues(form, lectureEdit) {
-    for (let error of form.querySelectorAll('.error')) {
+    for (let i = 0; i < form.querySelectorAll('.error').length; i++) {
+        let error = form.querySelectorAll('.error')[i];
         error.innerText = '';
         error.style.display = 'none';
     }
@@ -18,7 +19,8 @@ function setFormValues(form, lectureEdit) {
     form.querySelector('.lecture-add__time-end-hours').value = lectureEdit ? lectureEdit.time_end.split(':')[0] : '';
     form.querySelector('.lecture-add__time-end-minutes').value = lectureEdit ? lectureEdit.time_end.split(':')[1] : '';
 
-    for (let option of form.querySelectorAll('.lecture-add__schools option')) {
+    for (let i = 0; i < form.querySelectorAll('.lecture-add__schools option').length; i++) {
+        let option = form.querySelectorAll('.lecture-add__schools option')[i];
         option.selected = lectureEdit ? lectureEdit.schools_id.includes(Number(option.value)) : false;
     }
 }
@@ -47,7 +49,8 @@ function getFormValues(form, lecture) {
     lecture.time_end = form.querySelector('.lecture-add__time-end-hours').value + ':' + form.querySelector('.lecture-add__time-end-minutes').value;
     lecture.date_start_utc = (new Date(lecture.date_utc)).setHours(form.querySelector('.lecture-add__time-start-hours').value);
     lecture.schools_id = [];
-    for (let option of form.querySelectorAll('.lecture-add__schools option')) {
+    for (let i = 0; i < form.querySelectorAll('.lecture-add__schools option').length; i++) {
+        let option = form.querySelectorAll('.lecture-add__schools option')[i];
         if (option.selected) {
             lecture.schools_id.push(Number(option.value));
         }
@@ -79,7 +82,7 @@ function lectureEditForm(lectureId) {
     setFormValues(formEditLecture, lectureEdit);
     flatpickr('.lecture-add__date', {
         'defaultDate': new Date(lectureEdit.date_utc)
-    })
+    });
     formEditLecture.addEventListener('submit', (event) => {
         event.preventDefault();
         validateForm(formEditLecture, lectureEdit);

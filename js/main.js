@@ -27,7 +27,6 @@ function addFilterListeners() {
     date_start.addEventListener('change', () => {
         filter = filter || {};
         filter['date_start'] = new Date(date_start.value).toJSON();
-        ;
         buildSheduleHtml();
     });
     date_end.addEventListener('change', () => {
@@ -307,7 +306,8 @@ function addSheduleListeners() {
     });
 
     // открытие модального окна добавления лекции для редактирования
-    for (let editButton of document.querySelectorAll('.edit-button')) {
+    for (let i = 0; i < document.querySelectorAll('.edit-button').length; i++) {
+        let editButton = document.querySelectorAll('.edit-button')[i];
         editButton.addEventListener('click', () => {
             document.querySelector('.lecture-form').id = 'lecture-edit__form';
             lectureEditForm(editButton.getAttribute('lecture-id'));

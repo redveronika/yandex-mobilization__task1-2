@@ -5,7 +5,8 @@
  * **/
 function validateForm(form, lectureEdit) {
     // очищаем все поля с информацией об ошибках ввода
-    for (let error of form.querySelectorAll('.error')) {
+    for (let i = 0; i < form.querySelectorAll('.error').length; i++) {
+        let error = form.querySelectorAll('.error')[i];
         error.innerText = '';
         error.style.display = 'none';
     }
@@ -23,12 +24,13 @@ function validateForm(form, lectureEdit) {
 
     // проверяем, что введенная дата не устарела
     if (d <= (new Date()).getTime()) {
-        console.log('last date')
+        console.log('last date');
         form.querySelector('.lecture-add__date-wrapper').querySelector('.error').innerText = 'Невозможно создать лекцию с прошедшей датой';
         formValid = false;
     }
 
-    for (let school of selectSchools) {
+    for (let i = 0; i < selectSchools.length; i++) {
+        let school = selectSchools[i];
         let date = new Date(document.querySelector('.lecture-add__date').value);
         if (school.selected) {
             studentsCount += schools.filter((item) => {
@@ -96,7 +98,8 @@ function validateForm(form, lectureEdit) {
     }
 
     // показываем все поля с информацией об ошибках ввода
-    for (let error of form.querySelectorAll('.error')) {
+    for (let i = 0; i < form.querySelectorAll('.error').length; i++) {
+        let error = form.querySelectorAll('.error')[i];
         error.style.display = 'flex';
     }
 

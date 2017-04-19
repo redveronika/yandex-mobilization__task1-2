@@ -108,8 +108,8 @@ function addListenersSchoolsFormEdit(li, school) {
             school.name = name;
             li.querySelector('.school-item__name').innerText = name;
 
-            for (let item of document.getElementsByClassName('school-id-' + school.id)) {
-                item.innerText = name;
+            for (let i = 0; i < document.getElementsByClassName('school-id-' + school.id).length; i++) {
+                document.getElementsByClassName('location-id-' + location.id)[i].innerText = name;
             }
         }
 

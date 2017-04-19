@@ -102,8 +102,8 @@ function addListenersLocationsFormEdit(li, location) {
             location.name = name;
             li.querySelector('.location-item__name').innerText = name;
 
-            for (let item of document.getElementsByClassName('location-id-' + location.id)) {
-                item.innerText = name;
+            for (let i = 0; i < document.getElementsByClassName('location-id-' + location.id).length; i++) {
+                document.getElementsByClassName('location-id-' + location.id)[i].innerText = name;
             }
         }
         if (capacity != location.capacity) {
