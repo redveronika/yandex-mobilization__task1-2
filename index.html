@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Расписание лекций проекта "Мобилизация"</title>
+    <link rel="stylesheet" href="plugins/datepicker/flatpickr.min.css">
+    <link rel="stylesheet" href="main.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Rubik:400,500" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+<main class="main">
+    <div class="main__content row j-fy-center">
+        <section class="schedule column">
+            <h1 class="schedule__title">Расписание лекций проекта "Мобилизация"</h1>
+            <div class="filters row">
+                <div class="column">
+                    <label for="select-school" class="label--h3 label--h filter__item">Название школы:</label>
+                    <select id="select-school" class="select-filter select-school filter__item">
+                        <option value="all">Все школы</option>
+                    </select>
+                </div>
+                <div class="column">
+                    <label for="select-location" class="label--h3 label--h filter__item">Название аудитории:</label>
+                    <select id="select-location" class="select-filter select-location filter__item">
+                        <option value="all">Все аудитории</option>
+                    </select>
+                </div>
+                <div class="column">
+                    <label for="date__start" class="label--h3 label--h filter__item">Период проведения лекций:</label>
+                    <div class="date-input__wrapper filter__item row">
+                        <label for="date__start" class="date-input__label">c</label>
+                        <input id="date__start" type="text" class="date date__start date__input"
+                               placeholder="dd/mm/yyyy"/>
+                        <span class="filter-divider divider"> - </span>
+                        <label for="date__end" class="date-input__label">по</label>
+                        <input id="date__end" type="text" class="date date__end date__input" placeholder="dd/mm/yyyy"/>
+                    </div>
+                </div>
+                <div class="open-lecture-add filter__item button">
+                    <a class="link button__button button__button--theme-mega-big" title="Добавить лекцию">Добавить
+                        лекцию</a>
+                </div>
+                <div class=" filter__item button column">
+                    <a class="open-schools-modal link link--theme-simple row" title="Список школ Яндекс Академии">Список
+                        школ</a>
+                    <a class="open-locations-modal link link--theme-simple row"
+                       title="Список аудиторий Яндекс Академии">Список аудиторий</a>
+                </div>
+            </div>
+            <div class="schedule__content">
+                <ul class="future-lectures">
+                </ul>
+                <div class="past-lectures__wrapper">
+                </div>
+            </div>
+        </section>
+
+        <section class="modal-speaker modal modal-close">
+            <div class="modal__wrapper">
+                <div class="modal-speaker__content modal__content column">
+                    <a class="modal__close"><i class="close-icon link"></i></a>
+                    <div class="speaker__info row">
+                        <div class="speaker__photo column">
+                            <img class="modal__speaker-image speaker__image"/>
+                        </div>
+                        <div class="speaker__about column">
+                            <h1 class="modal__speaker-name"></h1>
+                            <p class="speaker__about-text"></p>
+                        </div>
+                    </div>
+                    <div class="lectures row">
+                        <div class="lectures__content column">
+                            <h2 class="lecture__title">Доклады</h2>
+                            <div class="lectures-row row">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="modal-schools modal modal-close">
+            <div class="modal-list modal__wrapper">
+                <div class="modal__content column">
+                    <a class="modal__close"><i class="close-icon link"></i></a>
+                    <div class="modal-list__title modal-item__wrapper row">
+                        <h1>Список школ Академии Яндекс:</h1>
+                        <div class="form-edit__buttons button">
+                            <a class="modal-list__add-button school-item-add link link--theme-simple button__button button__button--theme-big"
+                               title="Добавить школу">Добавить школу</a>
+                        </div>
+                    </div>
+                    <form class="modal-list__form form school-item-add__form modal-item__wrapper row">
+                        <div class="modal-list__form-item modal-list__list-title form-item__name column">
+                            <label for="school-item__name" class="label--h3 label--h row">Название школы*:</label>
+                            <input id="school-item__name"
+                                   class="form-item__input school-item-add__name school-item__name row" type="text"
+                                   required placeholder="Название школы"/>
+                        </div>
+                        <div class="modal-list__form-item form-item__value column">
+                            <label class="label--h3 label--h row">Кол-во студентов*:</label>
+                            <input class="form-item__input school-item-add__students school-item__students column"
+                                   type="number" min="10" placeholder="10" required/>
+                        </div>
+                        <div class="form-edit__buttons button">
+                            <input class="link submit button__button button__button--theme-mega-big" type="submit"
+                                   value="Сохранить">
+                            <a class="link button__button button__button--theme-mega-big form__cancel" title="Отмена">Отмена</a>
+                        </div>
+                    </form>
+                    <ul class="schools-list row"></ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="modal-locations modal modal-close">
+            <div class="modal-list modal__wrapper">
+                <div class="modal__content column">
+                    <a class="modal__close"><i class="close-icon link"></i></a>
+                    <div class="modal-list__title modal-item__wrapper row">
+                        <h1>Список аудиторий Академии Яндекс:</h1>
+                        <div class="modal-list__add-button button">
+                            <a class="location-item-add link link--theme-simple button__button button__button--theme-mega-big"
+                               title="Добавить аудиторию">Добавить аудиторию</a>
+                        </div>
+                    </div>
+                    <form class="modal-list__form modal-item__wrapper form location-item-add__form location-item__wrapper row">
+                        <div class="modal-list__form-item form-item__name column">
+                            <label class="label--h4 label--h row">Название аудитории*:</label>
+                            <input class="form-item__input location-item-add__name location-item__name column"
+                                   type="text" required placeholder="Название аудитории"/>
+                        </div>
+                        <div class="modal-list__form-item form-item__value column">
+                            <label class="label--h4 label--h row">Вместимость*:</label>
+                            <input class="form-item__input form-item__input-value location-item-add__capacity location-item__capacity column"
+                                   type="number" min="10" placeholder="10" required/>
+                        </div>
+                        <div class="form-edit__buttons button">
+                            <input class="link submit button__button button__button--theme-mega-big" type="submit"
+                                   value="Сохранить">
+                            <a class="link button__button button__button--theme-mega-big form__cancel" title="Отмена">Отмена</a>
+                        </div>
+                    </form>
+                    <ul class="locations-list row"></ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lecture-add modal modal-close">
+            <div class="lecture-add__wrapper modal__wrapper">
+                <div class="lecture-add__content modal__content column">
+                    <a class="modal__close"><i class="close-icon link"></i></a>
+
+                    <h1 class="lecture-add__header">Добавить лекцию:</h1>
+                    <form class="lecture-form form column">
+                        <label for="lecture-add__title" class="label--h4 label--h">Название лекции*:</label>
+                        <div class="column">
+                            <input id="lecture-add__title" class="form-item__input lecture-add__title" type="text"
+                                   required placeholder="Название лекции"/>
+                            <p class="lecture-add__error error"></p>
+                        </div>
+                        <div class="lecture-add__date-wrapper column">
+                            <div class="lecture-add__date-row row">
+                                <div class="column">
+                                    <label for="lecture-add__date" class="label--h4 label--h">Дата*:</label>
+                                    <input id="lecture-add__date" class="date__input form-item__input lecture-add__date"
+                                           type="text" required placeholder="Выберите дату"/>
+                                </div>
+                                <div class="column">
+                                    <label for="lecture-add__time-start-hours" class="label--h5 label--h">Время
+                                        начала*</label>
+                                    <div class="row">
+                                        <div class="column">
+                                            <label for="lecture-add__time-start-hours" class="label--h5">часы:</label>
+                                            <input id="lecture-add__time-start-hours"
+                                                   class="lecture-add__time form-item__input lecture-add__time-start-hours"
+                                                   type="number" min="0" max="23" required>
+                                        </div>
+                                        <span class="divider lecture-add__time-divider column">:</span>
+                                        <div class="column">
+                                            <label for="lecture-add__time-start-minutes"
+                                                   class="label--h5">минуты:</label>
+                                            <input id="lecture-add__time-start-minutes"
+                                                   class="lecture-add__time form-item__input lecture-add__time-start-minutes"
+                                                   type="number" min="0" max="59" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <label for="lecture-add__time-end-hours" class="label--h5 label--h">Время
+                                        окончания*</label>
+                                    <div class="row">
+                                        <div class="column">
+                                            <label for="lecture-add__time-end-hours" class="label--h5">часы:</label>
+                                            <input id="lecture-add__time-end-hours"
+                                                   class="lecture-add__time form-item__input lecture-add__time-end-hours"
+                                                   type="number" min="0" max="23" required>
+                                        </div>
+                                        <span class="divider lecture-add__time-divider column">:</span>
+                                        <div class="column">
+                                            <label for="lecture-add__time-end-minutes" class="label--h5">минуты:</label>
+                                            <input id="lecture-add__time-end-minutes"
+                                                   class="lecture-add__time form-item__input lecture-add__time-end-minutes"
+                                                   type="number" min="0" max="59" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="lecture-add__error error"></p>
+                        </div>
+                        <label for="lecture-add__location" class="label--h4 label--h">Аудитория*:</label>
+                        <div class="lecture-add__location-wrapper column">
+                            <select id="lecture-add__location" class="form-item__input lecture-add__location"
+                                    required></select>
+                            <p class="lecture-add__error error"></p>
+                        </div>
+                        <label for="lecture-add__description" class="label--h4 label--h">Описание:</label>
+                        <div class="row">
+                            <textarea id="lecture-add__description"
+                                      class="form-item__input lecture-add__description"></textarea>
+                        </div>
+                        <label for="lecture-add__schools" class="label--h4 label--h">Школа*:</label>
+                        <div class="lecture-add__schools-wrapper column">
+                            <select id="lecture-add__schools" class="form-item__input lecture-add__schools" multiple
+                                    required></select>
+                            <p class="lecture-add__error error"></p>
+                        </div>
+                        <label for="lecture-add__speaker" class="label--h4 label--h">Лектор*:</label>
+                        <div class="lecture-add__speaker-wrapper column">
+                            <select id="lecture-add__speaker" class="form-item__input lecture-add__speaker"
+                                    required></select>
+                            <p class="lecture-add__error error"></p>
+                        </div>
+                        <div class="button row">
+                            <a class="lecture-add-form__cancel link button__button button__button--theme-normall"
+                               title="Отмена">Отмена</a>
+                            <input class="link submit button__button button__button--theme-normall" type="submit"
+                                   value="Сохранить">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+<script src="js/data/schoolsData.js"></script>
+<script src="plugins/datepicker/flatpickr.min.js"></script>
+<script src="plugins/datepicker/l10n/ru.js"></script>
+<script src="js/supportFunctions.js"></script>
+<script src="js/modals/lectureForm.modal.js"></script>
+<script src="js/modals/schools.modal.js"></script>
+<script src="js/modals/locations.modal.js"></script>
+<script src="js/main.js"></script>
+<script src="js/validateForm.js"></script>
+</body>
+</html>
