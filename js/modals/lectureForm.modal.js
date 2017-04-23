@@ -63,6 +63,7 @@ function getFormValues(form, lecture) {
  * **/
 function lectureAddForm() {
     let formAddLecture = document.getElementById('lecture-add__form');
+    document.querySelector('.lecture-add__header').innerText = 'Добавить лекцию:';
     setFormValues(formAddLecture);
     formAddLecture.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -79,6 +80,7 @@ function lectureEditForm(lectureId) {
         return item.id == lectureId;
     })[0];
     let formEditLecture = document.getElementById('lecture-edit__form');
+    document.querySelector('.lecture-add__header').innerText = 'Редактировать лекцию:';
     setFormValues(formEditLecture, lectureEdit);
     flatpickr('.lecture-add__date', {
         'defaultDate': new Date(lectureEdit.date_utc)
