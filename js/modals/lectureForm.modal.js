@@ -32,7 +32,7 @@ function setFormValues(form, lectureEdit) {
  * **/
 function getFormValues(form, lecture) {
     lecture = lecture || {};
-    lecture.id = lecture && lecture.id ? lecture.id : lectures.length - 1;
+    lecture.id = lecture && lecture.id ? lecture.id : scheduleLibrary.lectures.length - 1;
     lecture.title = form.querySelector('.lecture-add__title').value;
     lecture.description = form.querySelector('.lecture-add__description').value;
     lecture.location_id = form.querySelector('.lecture-add__location').value;
@@ -66,7 +66,7 @@ function lectureAddForm() {
     setFormValues(formAddLecture);
     formAddLecture.addEventListener('submit', (event) => {
         event.preventDefault();
-        validateForm(formAddLecture);
+        validateForm(formAddLecture, false);
     });
 }
 
@@ -75,7 +75,7 @@ function lectureAddForm() {
  * @param lectureId(optional) - объект редактируемой лекции
  * **/
 function lectureEditForm(lectureId) {
-    const lectureEdit = lectures.filter((item) => {
+    const lectureEdit = scheduleLibrary.lectures.filter((item) => {
         return item.id == lectureId;
     })[0];
     let formEditLecture = document.getElementById('lecture-edit__form');
