@@ -1,8 +1,17 @@
+const scheduleLibrary = new ScheduleLibrary();
+
 Flatpickr.localize(Flatpickr.l10ns.ru);
+
+// изменяемые данные лекций, аудиторий, школ и лекторов. Они могут быть разными для каждого клиента
+scheduleLibrary.setLecturesList(lecturesConst);
+scheduleLibrary.setSchoolsList(schoolsConst);
+scheduleLibrary.setSpeakersList(speakersConst);
+scheduleLibrary.setLocationsList(locationsConst);
+
 let filter;
 
 /**
- * buildSheduleItem - слушаем события изменения фильтров
+ * addFilterListeners - слушаем события изменения фильтров
  * **/
 function addFilterListeners() {
     // фильтруем список лекции на событие изменения селектора школы
@@ -64,7 +73,7 @@ function buildSheduleItem(lecture) {
             })[0],
             className = classTemp ? classTemp.className : 'label--others';
         span.setAttribute('class', 'label ' + className + ' school-id-' + schoolId);
-        let schoolName = schools.filter((item) => {
+        let schoolName = scheduleLibrary.schools.filter((item) => {
             return item.id == schoolId;
         })[0].name;
         span.innerText = schoolName;
@@ -75,10 +84,10 @@ function buildSheduleItem(lecture) {
     }
 
     // получаем имя лектора по id из объекта speakers, аналогично с аудиторией
-    let speaker = lecture.speaker_id !== -1 ? speakers.filter((item) => {
+    let speaker = lecture.speaker_id !== -1 ? scheduleLibrary.speakers.filter((item) => {
             return item.id == lecture.speaker_id;
         })[0] : {name: '', photo: ''},
-        location = locations.filter((item) => {
+        location = scheduleLibrary.locations.filter((item) => {
             return item.id == lecture.location_id;
         })[0].name,
         li = document.createElement('li');
@@ -141,34 +150,7 @@ function buildSheduleItem(lecture) {
  * **/
 function buildSheduleHtml() {
     // создаем новый отфильтрованный объект лекций
-    let filterLectures = lectures;
-    if (filter && (filter.date_start || filter.date_end)) {
-        filter.date_start = filter.date_start || lectures[0].date_start_utc;
-        filter.date_end = filter.date_end || lectures[lectures.length - 1].date_end_utc;
-
-        filterLectures = filterLectures.filter((item) => {
-            if (item.date_start_utc >= filter.date_start && item.date_end_utc <= filter.date_end) {
-                return item;
-            }
-        });
-    }
-    if (filter && filter.school && filter.school != 'all') {
-        filterLectures = filterLectures.filter((item) => {
-            if (item.schools_id.includes(Number(filter.school))) {
-                return item;
-            }
-        });
-    }
-    if (filter && filter.location && filter.location != 'all') {
-        filterLectures = filterLectures.filter((item) => {
-            return item.location_id == filter.location;
-        });
-    }
-
-    // сортируем объект лекций по дате
-    filterLectures.sort((a, b) => {
-        return new Date(a.date_start_utc) - new Date(b.date_start_utc);
-    });
+    let filterLectures = scheduleLibrary.filterSchedule(filter);
 
     // подставляем данные лекций в HTML
     document.querySelector('.future-lectures').innerHTML = '';
@@ -244,7 +226,7 @@ function addSheduleListeners() {
     for (let i = 0; i < document.querySelectorAll('.schedule__speaker').length; i++) {
         let speakerLink = document.querySelectorAll('.schedule__speaker')[i];
         speakerLink.addEventListener('click', () => {
-            let speaker = speakers.filter((item) => {
+            let speaker = scheduleLibrary.speakers.filter((item) => {
                 return item.name == speakerLink.querySelector('.speaker__name').innerText;
             })[0];
             document.querySelector('.modal__speaker-name').innerText = speaker.name;
@@ -324,11 +306,11 @@ function addSheduleListeners() {
 
 buildSheduleHtml();
 addFilterListeners();
-setSelectOptions(schools, 'id', 'name', document.querySelector('.select-school'));
-setSelectOptions(locations, 'id', 'name', document.querySelector('.select-location'));
-setSelectOptions(locations, 'id', 'name', document.querySelector('.lecture-add__location'));
-setSelectOptions(speakers, 'id', 'name', document.querySelector('.lecture-add__speaker'));
-setSelectOptions(schools, 'id', 'name', document.querySelector('.lecture-add__schools'));
+scheduleLibrary.setSelectOptions(scheduleLibrary.schools, 'id', 'name', document.querySelector('.select-school'));
+scheduleLibrary.setSelectOptions(scheduleLibrary.locations, 'id', 'name', document.querySelector('.select-location'));
+scheduleLibrary.setSelectOptions(scheduleLibrary.locations, 'id', 'name', document.querySelector('.lecture-add__location'));
+scheduleLibrary.setSelectOptions(scheduleLibrary.speakers, 'id', 'name', document.querySelector('.lecture-add__speaker'));
+scheduleLibrary.setSelectOptions(scheduleLibrary.schools, 'id', 'name', document.querySelector('.lecture-add__schools'));
 buildSchoolsModal();
 buildLocationsModal();
 flatpickr('.date__start');

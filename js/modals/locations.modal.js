@@ -34,7 +34,7 @@ function buildLocationsModal() {
           <h3 class="modal-list__form-item modal-list-item__value column">Вместимость</h3>
       </div>
     `;
-    for (let location of locations) {
+    for (let location of scheduleLibrary.locations) {
         let li = document.createElement('li');
         buildLocationItem(li, location.name, location.capacity);
         addListenersLocationsFormEdit(li, location)
@@ -55,19 +55,21 @@ function buildLocationsModal() {
     formAdd.addEventListener('submit', (event) => {
         event.preventDefault();
         let name = formAdd.querySelector('.location-item-add__name').value,
-            capacity = formAdd.querySelector('.location-item-add__capacity').value;
-        let li = document.createElement('li'),
+            capacity = formAdd.querySelector('.location-item-add__capacity').value,
+            li = document.createElement('li'),
             location = {
-                id: locations.length,
+                id: scheduleLibrary.locations.length,
                 name: name,
                 capacity: capacity
             };
-        buildLocationItem(li, name, capacity);
-        locations.push(location);
-        formAdd.style.display = 'none';
-        writeInStorage('locations', locations);
-        setSelectOptions(locations, 'id', 'name', document.querySelector('.lecture-add__location'), true);
-        addListenersLocationsFormEdit(li, location);
+        if (scheduleLibrary.addLocation(location)) {
+            buildLocationItem(li, name, capacity);
+            scheduleLibrary.setSelectOptions(scheduleLibrary.locations, 'id', 'name', document.querySelector('.lecture-add__location'), true);
+            addListenersLocationsFormEdit(li, location);
+            formAdd.style.display = 'none';
+        } else {
+            formAdd.querySelector('.location-item-add__name').style.border = '1px solid red';
+        }
     });
 }
 
@@ -97,27 +99,19 @@ function addListenersLocationsFormEdit(li, location) {
             capacity = li.querySelector('.location-item-edit__capacity').value,
             dataChanged = name != location.name || capacity != location.capacity;
 
-        // проверяем, изменились ли данные
-        if (name != location.name) {
-            location.name = name;
-            li.querySelector('.location-item__name').innerText = name;
-
-            for (let i = 0; i < document.getElementsByClassName('location-id-' + location.id).length; i++) {
-                document.getElementsByClassName('location-id-' + location.id)[i].innerText = name;
+        if(scheduleLibrary.editLocation(location, name, capacity, dataChanged)) {
+            if(dataChanged){
+                scheduleLibrary.setSelectOptions(scheduleLibrary.locations, 'id', 'name', document.querySelector('.lecture-add__location'), true);
+                li.querySelector('.location-item__name').innerText = name;
+                for (let i = 0; i < document.getElementsByClassName('location-id-' + location.id).length; i++) {
+                    document.getElementsByClassName('location-id-' + location.id)[i].innerText = name;
+                }
+                li.querySelector('.location-item__capacity').innerText = capacity;
             }
-        }
-        if (capacity != location.capacity) {
-            location.capacity = capacity;
-            li.querySelector('.location-item__capacity').innerText = capacity;
-        }
-
-        li.querySelector('.modal-item__wrapper').style.display = 'flex';
-        formEdit.style.display = 'none';
-
-        // если данные изменились обновляем объект locations и перезаписываем localStorage
-        if (dataChanged) {
-            writeInStorage('locations', locations);
-            setSelectOptions(locations, 'id', 'name', document.querySelector('.lecture-add__location'), true);
+            li.querySelector('.modal-item__wrapper').style.display = 'flex';
+            formEdit.style.display = 'none';
+        } else {
+            formEdit.querySelector('.location-item-edit__name').style.border = '1px solid red';
         }
     });
 }

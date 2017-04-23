@@ -36,10 +36,10 @@ function buildSchoolsModal() {
     </div>
   `;
     // находим максимальную вместимость аудитории, кол-во студентов не должно быть больше максимальной вместимости на данный момент
-    let maxCapacity = Math.max.apply(Math, locations.map((location) => {
+    let maxCapacity = Math.max.apply(Math, scheduleLibrary.locations.map((location) => {
         return location.capacity
     }));
-    for (let school of schools) {
+    for (let school of scheduleLibrary.schools) {
         let li = document.createElement('li');
         buildSchoolItem(li, school.name, school.students, maxCapacity);
         addListenersSchoolsFormEdit(li, school)
@@ -64,16 +64,19 @@ function buildSchoolsModal() {
             students = formAdd.querySelector('.school-item-add__students').value;
         let li = document.createElement('li'),
             school = {
-                id: schools.length,
+                id: scheduleLibrary.schools.length,
                 name: name,
                 students: students
             };
-        buildSchoolItem(li, name, students, maxCapacity);
-        schools.push(school);
-        formAdd.style.display = 'none';
-        writeInStorage('schools', schools);
-        setSelectOptions(schools, 'id', 'name', document.querySelector('.lecture-add__schools'), true);
-        addListenersSchoolsFormEdit(li, school);
+
+        if (scheduleLibrary.addSchool(school)) {
+            buildSchoolItem(li, name, students, maxCapacity);
+            scheduleLibrary.setSelectOptions(scheduleLibrary.schools, 'id', 'name', document.querySelector('.lecture-add__schools'), true);
+            addListenersSchoolsFormEdit(li, school);
+            formAdd.style.display = 'none';
+        } else {
+            formAdd.querySelector('.school-item-add__name').style.border = '1px solid red';
+        }
     });
 }
 
@@ -103,27 +106,19 @@ function addListenersSchoolsFormEdit(li, school) {
             students = li.querySelector('.school-item-edit__students').value,
             dataChanged = name != school.name || students != school.students;
 
-        // проверяем, изменились ли данные
-        if (name != school.name) {
-            school.name = name;
-            li.querySelector('.school-item__name').innerText = name;
-
-            for (let i = 0; i < document.getElementsByClassName('school-id-' + school.id).length; i++) {
-                document.getElementsByClassName('location-id-' + location.id)[i].innerText = name;
+        if(scheduleLibrary.editSchool(school, name, students, dataChanged)) {
+            if(dataChanged){
+                scheduleLibrary.setSelectOptions(scheduleLibrary.schools, 'id', 'name', document.querySelector('.lecture-add__schools'), true);
+                li.querySelector('.school-item__name').innerText = name;
+                for (let i = 0; i < document.getElementsByClassName('school-id-' + school.id).length; i++) {
+                    document.getElementsByClassName('school-id-' + school.id)[i].innerText = name;
+                }
+                li.querySelector('.school-item__students').innerText = students;
             }
-        }
-
-        if (students != school.students) {
-            school.students = students;
-            li.querySelector('.school-item__students').innerText = students;
-        }
-
-        // если данные изменились обновляем объект schools и перезаписываем localStorage
-        li.querySelector('.modal-item__wrapper').style.display = 'flex';
-        formEdit.style.display = 'none';
-        if (dataChanged) {
-            writeInStorage('schools', schools);
-            setSelectOptions(schools, 'id', 'name', document.querySelector('.lecture-add__schools'), true);
+            li.querySelector('.modal-item__wrapper').style.display = 'flex';
+            formEdit.style.display = 'none';
+        } else {
+            formEdit.querySelector('.school-item-edit__name').style.border = '1px solid red';
         }
     });
 }
