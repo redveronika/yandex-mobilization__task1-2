@@ -1,5 +1,7 @@
 # Shedule Library. Документация.
 
+[Пример использования библиотеки](https://github.com/redveronika/yandex-mobilization__task1-2/blob/gh-pages/js/schedule-library/example.md)
+
 ## Подключение библиотеки
 
 1. Вставьте код ниже перед закрывающим тегом `</body>` вашего проекта: 
