@@ -313,5 +313,6 @@ scheduleLibrary.setSelectOptions(scheduleLibrary.speakers, 'id', 'name', documen
 scheduleLibrary.setSelectOptions(scheduleLibrary.schools, 'id', 'name', document.querySelector('.lecture-add__schools'));
 buildSchoolsModal();
 buildLocationsModal();
+lectureFormSubmit();
 flatpickr('.date__start');
 flatpickr('.date__end');

@@ -239,7 +239,6 @@ class ScheduleLibrary {
                 school.students = studentsNew;
             }
             if(this.validateSchool(school)) {
-                this.writeInStorage('schools', this.schools);
                 return true;
             } else {
                 return false;
@@ -279,61 +278,72 @@ class ScheduleLibrary {
      * @param inputSpeaker - выбранный лектор
      * @param lectureEdit(optional) - если данные лекции редактируются - передаем объект данных редактируемой лекции
      * **/
-    validateLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker, lectureEdit) {
+    validateLecture(newLecture) {
         let formErrors = [],
-            studentsCount = 0;
+            studentsCount = 0,
+            inputDate = new Date(newLecture.date_utc),
+            dateDesire = {
+                date: new Date(newLecture.date_utc),
+                start: {
+                    hours: newLecture.time_start.split(':')[0],
+                    minutes: newLecture.time_start.split(':')[1]
+                },
+                end: {
+                    hours: newLecture.time_end.split(':')[0],
+                    minutes: newLecture.time_end.split(':')[1]
+                }
+            };
+
+        inputDate.setHours(dateDesire.start.hours);
+        inputDate.setMinutes(dateDesire.start.minutes);
+
         // проверяем, что введенная дата не устарела
         if (inputDate <= (new Date()).getTime()) {
-            console.log('last date');
             formErrors.push({
                 name: 'date',
                 value: true
             });
         }
 
-        for (let i = 0; i < selectedSchools.length; i++) {
-            let school = selectedSchools[i];
-            if (school.selected) {
-                studentsCount += this.schools.filter((item) => {
-                    return item.id == school.value;
-                })[0].students;
-                for (let lecture of this.lectures) {
-                    let dateExist = {
-                            date: lecture.date_utc,
-                            start: lecture.date_start_utc,
-                            end: lecture.date_end_utc
-                        };
-                    // проверяем, что лекция не редактируется, либо редактируемая лекция не является текущей в объекте
-                    if (!lectureEdit || (lectureEdit && lectureEdit.id != lecture.id)) {
-
-                        // проверяем, что у введеной школы нет других лекций в данное время
-                        if (lecture.schools_id.includes(Number(school.value)) && this.checkTime(dateExist, dateDesire)) {
-                            formErrors.push({
-                                name: 'schoolBusy',
-                                value: true
-                            });
-                        }
-                        // проверяем, что в указанной аудитории нет других лекций в данное время
-                        if (lecture.location_id == inputLocation && this.checkTime(dateExist, dateDesire)) {
-                            formErrors.push({
-                                name: 'locationBusy',
-                                value: true
-                            });
-                        }
-                        // проверяем, что у выбранного лектора нет других лекций в данное время
-                        if (lecture.speaker_id == inputSpeaker && this.checkTime(dateExist, dateDesire)) {
-                            formErrors.push({
-                                name: 'speakerBusy',
-                                value: true
-                            });
-                        }
+        for (let school of newLecture.schools_id) {
+            studentsCount += this.schools.filter((item) => {
+                return item.id == school;
+            })[0].students;
+            for (let lecture of this.lectures) {
+                let dateExist = {
+                        date: lecture.date_utc,
+                        start: lecture.date_start_utc,
+                        end: lecture.date_end_utc
+                    };
+                // проверяем, что редактируемая лекция не является текущей в объекте
+                if (newLecture.id != lecture.id) {
+                    // проверяем, что у введеной школы нет других лекций в данное время
+                    if (lecture.schools_id.includes(school) && this.checkTime(dateExist, dateDesire)) {
+                        formErrors.push({
+                            name: 'schoolBusy',
+                            value: true
+                        });
+                    }
+                    // проверяем, что в указанной аудитории нет других лекций в данное время
+                    if (lecture.location_id == newLecture.location_id && this.checkTime(dateExist, dateDesire)) {
+                        formErrors.push({
+                            name: 'locationBusy',
+                            value: true
+                        });
+                    }
+                    // проверяем, что у выбранного лектора нет других лекций в данное время
+                    if (lecture.speaker_id == newLecture.speaker_id && this.checkTime(dateExist, dateDesire)) {
+                        formErrors.push({
+                            name: 'speakerBusy',
+                            value: true
+                        });
                     }
                 }
             }
         }
         // проверяем, что вместимость выбранной аудитории больше, чем количество учеников в указанных школах
         let locationCapacity = this.locations.filter((item) => {
-            return item.id == inputLocation;
+            return item.id == newLecture.location_id;
         })[0].capacity;
         if (locationCapacity < studentsCount) {
             formErrors.push({
@@ -346,18 +356,15 @@ class ScheduleLibrary {
 
     /**
      * addLecture - добавляем новую лекцию
-     * @param inputDate - введенная дата проведения лекции
-     * @param dateDesire - желаемые дата и время проведения лекции
-     * @param selectedSchools - выбранные школы
-     * @param inputLocation - выбранная аудитория
-     * @param inputSpeaker - выбранный лектор
+     * @param newLecture{object} - объект данных добавляемой лекции
      * **/
-    addLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker) {
-        const formErrors = this.validateLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker),
-            formValid = formErrors.some((item) => {
+    addLecture(newLecture) {
+        const formErrors = this.validateLecture(newLecture),
+            formInValid = formErrors.some((item) => {
                 return item.value === true;
             });
-        if(!formValid) {
+        if(!formInValid) {
+            this.lectures.push(newLecture);
             this.writeInStorage('lectures', this.lectures);
             return true;
         } else {
@@ -367,19 +374,17 @@ class ScheduleLibrary {
 
     /**
      * editLecture - редактируем лекцию
-     * @param inputDate - введенная дата проведения лекции
-     * @param dateDesire - желаемые дата и время проведения лекции
-     * @param selectedSchools - выбранные школы
-     * @param inputLocation - выбранная аудитория
-     * @param inputSpeaker - выбранный лектор
-     * @param lectureEdit(optional) - если данные лекции редактируются - передаем объект данных редактируемой лекции
+     * @param newLecture{object} - объект данных редактируемой лекции
      * **/
-    editLecture(lectureEdit, inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker) {
-        const formErrors = this.validateLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker, lectureEdit),
-               formValid = formErrors.some((item) => {
+    editLecture(newLecture) {
+        const formErrors = this.validateLecture(newLecture),
+               formInValid = formErrors.some((item) => {
                    return item.value === true;
                });
-        if(!formValid) {
+        if(!formInValid) {
+            scheduleLibrary.lectures.filter((item) => {
+                return item.id == newLecture.id;
+            })[0] = newLecture;
             this.writeInStorage('lectures', this.lectures);
             return true;
         } else {

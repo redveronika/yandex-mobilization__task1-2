@@ -9,6 +9,7 @@ function setFormValues(form, lectureEdit) {
         error.innerText = '';
         error.style.display = 'none';
     }
+    form.querySelector('.lecture-add__id').value = lectureEdit ? lectureEdit.id : scheduleLibrary.lectures.length;
     form.querySelector('.lecture-add__title').value = lectureEdit ? lectureEdit.title : '';
     form.querySelector('.lecture-add__description').value = lectureEdit ? lectureEdit.description : '';
     form.querySelector('.lecture-add__location').value = lectureEdit ? lectureEdit.location_id : '';
@@ -32,13 +33,14 @@ function setFormValues(form, lectureEdit) {
  * **/
 function getFormValues(form, lecture) {
     lecture = lecture || {};
-    lecture.id = lecture && lecture.id ? lecture.id : scheduleLibrary.lectures.length - 1;
+    lecture.id = form.querySelector('.lecture-add__id').value;
     lecture.title = form.querySelector('.lecture-add__title').value;
     lecture.description = form.querySelector('.lecture-add__description').value;
     lecture.location_id = form.querySelector('.lecture-add__location').value;
     lecture.speaker_id = form.querySelector('.lecture-add__speaker').value;
-    let date = new Date((new Date(form.querySelector('.lecture-add__date').value)).setHours(0));
-    lecture.date_utc = date;
+    let date = new Date(form.querySelector('.lecture-add__date').value);
+    date.setMinutes(0);
+    lecture.date_utc = new Date(date);
     date.setHours(form.querySelector('.lecture-add__time-start-hours').value);
     date.setMinutes(form.querySelector('.lecture-add__time-start-minutes').value);
     lecture.date_start_utc = new Date(date);
@@ -65,15 +67,12 @@ function lectureAddForm() {
     let formAddLecture = document.getElementById('lecture-add__form');
     document.querySelector('.lecture-add__header').innerText = 'Добавить лекцию:';
     setFormValues(formAddLecture);
-    formAddLecture.addEventListener('submit', (event) => {
-        event.preventDefault();
-        validateForm(formAddLecture, false);
-    });
 }
+
 
 /**
  * lectureEditForm - устанавливаем значения в форму редактирования, вешаем слушателя на событие отправки формы
- * @param lectureId(optional) - объект редактируемой лекции
+ * @param lectureId{object} - объект редактируемой лекции
  * **/
 function lectureEditForm(lectureId) {
     const lectureEdit = scheduleLibrary.lectures.filter((item) => {
@@ -85,8 +84,34 @@ function lectureEditForm(lectureId) {
     flatpickr('.lecture-add__date', {
         'defaultDate': new Date(lectureEdit.date_utc)
     });
-    formEditLecture.addEventListener('submit', (event) => {
+}
+
+/**
+ * lectureFormSubmit - слушаем события на отправку формы добавления/редактирования лекции
+ * **/
+function lectureFormSubmit() {
+    const form = document.querySelector('.lecture-form');
+    form.addEventListener('submit', (event) => {
         event.preventDefault();
-        validateForm(formEditLecture, lectureEdit);
+        if(form.id === 'lecture-add__form') {
+            validateForm(form, false).then((result) => {
+                if (result) {
+                    document.querySelector('.lecture-add').style.display = 'none';
+                    buildSheduleHtml();
+                }
+            });
+        }
+
+        if(form.id === 'lecture-edit__form') {
+            const lectureEdit = scheduleLibrary.lectures.filter((item) => {
+                return item.id == form.querySelector('.lecture-add__id').value;
+            })[0];
+            validateForm(form, lectureEdit).then((result) => {
+                if (result) {
+                    document.querySelector('.lecture-add').style.display = 'none';
+                    buildSheduleHtml();
+                }
+            });
+        }
     });
 }

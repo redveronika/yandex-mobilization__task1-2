@@ -10,46 +10,29 @@ function validateForm(form, lectureEdit) {
         error.innerText = '';
         error.style.display = 'none';
     }
-    const selectSchools = form.querySelectorAll('.lecture-add__schools option'),
-        date = document.querySelector('.lecture-add__date').value,
-        startTimeHours = document.querySelector('.lecture-add__time-start-hours').value,
-        startTimeMinutes = document.querySelector('.lecture-add__time-start-minutes').value,
-        location = form.querySelector('.lecture-add__location').value,
-        speaker = form.querySelector('.lecture-add__speaker').value,
-        dateDesire = {
-            date: new Date(date),
-            start: {
-                hours: document.querySelector('.lecture-add__time-start-hours').value,
-                minutes: document.querySelector('.lecture-add__time-start-minutes').value
-            },
-            end: {
-                hours: document.querySelector('.lecture-add__time-end-hours').value,
-                minutes: document.querySelector('.lecture-add__time-end-minutes').value
-            }
-        };
-
-    let d = new Date(date);
-    d.setHours(startTimeHours);
-    d.setMinutes(startTimeMinutes);
 
     if(lectureEdit) {
-        const response = scheduleLibrary.editLecture(lectureEdit, d, dateDesire, selectSchools, location, speaker);
-        if(response === true) {
-            document.querySelector('.lecture-add').style.display = 'none';
-            buildSheduleHtml();
-        } else {
-            showErrors(response);
-        }
+        return new Promise((resolve, reject) => {
+            const newUpdatedLecture = getFormValues(form, lectureEdit);
+            const response = scheduleLibrary.editLecture(newUpdatedLecture);
+            if(response === true) {
+                resolve(true);
+            } else {
+                showErrors(response);
+                reject(false)
+            }
+        })
     } else {
-        const response = scheduleLibrary.addLecture(d, dateDesire, selectSchools, location, speaker);
-        if(response === true) {
-            let newUpdatedLecture = getFormValues(form, lectureEdit);
-            scheduleLibrary.lectures.push(newUpdatedLecture);
-            document.querySelector('.lecture-add').style.display = 'none';
-            buildSheduleHtml();
-        } else {
-            showErrors(response);
-        }
+        return new Promise((resolve, reject) => {
+            const newUpdatedLecture = getFormValues(form);
+            const response = scheduleLibrary.addLecture(newUpdatedLecture);
+            if (response === true) {
+                resolve(true);
+            } else {
+                showErrors(response);
+                reject(false)
+            }
+        });
     }
 
     function showErrors(formErrors) {
