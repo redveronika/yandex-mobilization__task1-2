@@ -24,7 +24,21 @@ const scheduleLibrary = new ScheduleLibrary();
 ```
 setLecturesList(lectures)
 ```
-lectures {object} - массив всех лекций
+lectures {object} - массив всех лекций, с параметрами:
+- id{number|string} - порядковый номер записи в массиве
+- title{string} - название лекции
+- date_utc{string} - дата проведения лекции в формате UTC
+- date_start_utc{string|object} - дата начала лекции в формате UTC
+- date_end_utc{string|object} - дата конца лекции в формате UTC
+- location_id{number|string} - идентификатор аудитории
+- schools_id{Object} - массив номеров или строк идентификаторов школ
+- speaker_id{number|string} - идентификатор лектора
+- time_start{string} - время начала лекции
+- time_end{string} - время окончания лекции
+- description{string}(optional) - описание лекции
+- date{string}(optional) - дата проведения лекции в удобном для чтения формате
+- link{string}(optional) - оссылка на материалы лекции
+
 
 
 ### Добавление списка школ:
@@ -34,7 +48,10 @@ lectures {object} - массив всех лекций
 ```
 setSchoolsList(schools)
 ```
-schools {object} - массив всех школ
+schools {object} - массив всех школ с параметрами:
+- id{number|string} - порядковый номер записи в массиве
+- name{string} - название школы
+- students{number|string} - количество студентов, обучающихся в школе
 
 
 ### Добавление списка лекторов:
@@ -44,7 +61,16 @@ schools {object} - массив всех школ
 ```
 setSpeakersList(speakers)
 ```
-speakers {object} - массив всех лекторов
+speakers {object} - массив всех лекторов с параметрами:
+- id{number|string} - порядковый номер записи в массиве
+- name{string} - имя лектора
+- about{number|string}(optional) - информация о лекторе
+- photo{string}(optional) - ссылка на фотографию лектора
+- videos{object}(optional) - массив с информацией о прочитанных лектором докладов с параметрами:
+	- link{string}(optional) - ссылка на видео доклада
+	- title{string}(optional) - название доклада
+	- date{string}(optional) - дата проведения доклада
+	- img{string}(optional) - ссылка на обложку доклада
 
 
 ### Добавление списка аудиторий:
@@ -54,7 +80,10 @@ speakers {object} - массив всех лекторов
 ```
 setLocationsList(locations)
 ```
-locations {object} - массив всех аудиторий
+locations {object} - массив всех аудиторий с параметрами:
+- id{number|string} - порядковый номер записи в массиве
+- name{string} - название аудитории
+- capacity{number|string} - вместимость аудитории
 
 
 ### Фильтрация лекций по заданным параметрам:
@@ -125,17 +154,12 @@ dataChanged{boolean} - поменялись ли данные
 ```
 addLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker)
 ```
-inputDate{string|object} - введенная дата проведения лекции
-dateDesire{object} - желаемые дата и время проведения лекции
-selectedSchools{object} - выбранные школы
-inputLocation{number|string} - выбранная аудитория
-inputSpeaker{number|string} - выбранный лектор
+newLecture{object} - объект данных добавляемой лекции
 
 
 ### Редактирование данных о лекции
 
-Метод позволяет отредактировать данные о лекции. Перед добавлением введенные данные проходят валидацию и в случае, если название пустое, либо совпадает с уже существующим, но не редактируемоей лекции, то лекция не будет добавлена.
-
+Метод позволяет отредактировать имеющуюся лекцию.
 Проходит проверку по следующим условиям:
 * редактируемая лекция не может иметь прошедшую дату
 * у выбранной аудитории вместимость должна быть больше или равной количеству всех учеников в школах, для которых будет читаться лекция.
@@ -146,11 +170,6 @@ inputSpeaker{number|string} - выбранный лектор
 ```
 editLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker, lectureEdit)
 ```
-inputDate{string|object} - введенная дата проведения лекции
-dateDesire{object} - желаемые дата и время проведения лекции
-selectedSchools{object} - выбранные школы
-inputLocation{number|string} - выбранная аудитория
-inputSpeaker{number|string} - выбранный лектор
-lectureEdit{object} - объект данных редактируемой лекции
+newLecture{object} - объект данных редактируемой лекции
 
 После добавления и правки объекты данных записываются в localStorage.
