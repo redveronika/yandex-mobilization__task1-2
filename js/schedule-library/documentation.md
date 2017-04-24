@@ -152,7 +152,7 @@ dataChanged{boolean} - поменялись ли данные
 * у выбранной аудитории вместимость должна быть больше или равной количеству всех учеников в школах, для которых будет читаться лекция.
 
 ```
-addLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker)
+addLecture(newLecture)
 ```
 newLecture{object} - объект данных добавляемой лекции
 
@@ -168,7 +168,7 @@ newLecture{object} - объект данных добавляемой лекци
 * во время проведении лекции у выбранного лектора не должно быть других лекций, также учитывается, что минимальный перерыв между лекциями = 30 минут.
 
 ```
-editLecture(inputDate, dateDesire, selectedSchools, inputLocation, inputSpeaker, lectureEdit)
+editLecture(newLecture)
 ```
 newLecture{object} - объект данных редактируемой лекции
 
