@@ -665,6 +665,10 @@ input:invalid {
     margin-bottom: 10px;
 }
 
+.lecture-add__id {
+    visibility:hidden;
+}
+
 .dote-icon {
     width: 10px;
     height: 10px;
