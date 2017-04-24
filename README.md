@@ -32,7 +32,8 @@
 
 ## Реализация:
 
-* Написана библиотека `Shedule Library` для работы с раписание из первого задания. [Документация к библиотеке](https://github.com/redveronika/yandex-mobilization__task1-2/blob/gh-pages/js/schedule-library/documentation.md).
+* Написана библиотека `Shedule Library` для работы с раписание из первого задания. [Документация к библиотеке](https://github.com/redveronika/yandex-mobilization__task1-2/blob/gh-pages/js/schedule-library/documentation.md) и 
+[пример использования](https://github.com/redveronika/yandex-mobilization__task1-2/blob/gh-pages/js/schedule-library/example.md).
 
 * Реализован [веб-интерфейс](https://redveronika.github.io/yandex-mobilization__task1-2/) для библиотеки.
 Доступен просмотр расписания для школы в заданный промежуток дат, для аудитории в заданном диапазоне даты, а так же просмотр лекции для выбранной школы в конкретной аудитории в указанном диапазоне дат.
