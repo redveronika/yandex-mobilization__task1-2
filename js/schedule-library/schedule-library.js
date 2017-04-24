@@ -271,12 +271,7 @@ class ScheduleLibrary {
 
     /**
      * validateLecture - проверяем формы добавления или редактирования лекции
-     * @param inputDate - введенная дата проведения лекции
-     * @param dateDesire - желаемые дата и время проведения лекции
-     * @param selectedSchools - выбранные школы
-     * @param inputLocation - выбранная аудитория
-     * @param inputSpeaker - выбранный лектор
-     * @param lectureEdit(optional) - если данные лекции редактируются - передаем объект данных редактируемой лекции
+     * @param newLecture{object} - объект данных проверяемой лекции
      * **/
     validateLecture(newLecture) {
         let formErrors = [],
